@@ -21,6 +21,7 @@
     <div class="field"><label>name</label><input type="text" name="name" value="${dto.name}"></div>
     <div class="field"><label>Email</label><input type="text" name="email" value="${dto.email}"></div>
     <div class="field"><label>Phone</label><input type="text" name="phone" value="${dto.phone}"></div>
+    <div class="field"><label>${message}</label></div>
     <div class="login-button">
         <input type="submit" class="btn-login" value="Join"/>
         <input type="button" class="btn-login" value="Back" onClick="location.href='/'"/>
