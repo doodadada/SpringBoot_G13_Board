@@ -10,8 +10,21 @@
         WHERE userid = #{param1}
     </select>
     <insert id="insertMember" parameterType="com.himedia.g13.dto.MemberDto">
-        INSERT INTO member(userid, pwd, name, email, phone) values(#{userid}, #{pwd}, #{name}, #{email}, #{phone})
+        INSERT INTO member(userid, pwd, name, email, phone, provider)
+        values (#{userid}, #{pwd}, #{name}, #{email}, #{phone}, #{provider})
     </insert>
+    <update id="updateMember" parameterType="com.himedia.g13.dto.MemberDto">
+        UPDATE member
+        SET pwd=#{pwd},
+            name=#{name},
+            email=#{email},
+            phone=#{phone}
+        WHERE userid = #{userid}
+    </update>
+    <delete id="deleteMember">
+        DELETE FROM member
+        WHERE userid = #{param1}
+    </delete>
     <!--    <select id="select" resultType="com.himedia.g11.dto.BbsDto">-->
     <!--        SELECT * FROM bbs ORDER BY id DESC-->
     <!--    </select>-->

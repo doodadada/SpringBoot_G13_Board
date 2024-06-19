@@ -8,4 +8,8 @@ public interface IMemberDao {
     MemberDto getMember(String userid);
 
     void insertMember(MemberDto mdto);
+
+    void updateMember(MemberDto memberdto);
+
+    void deleteMember(String userid);
 }

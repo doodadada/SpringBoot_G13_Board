@@ -25,7 +25,7 @@
         <input type="button" class="btn facebook" value="Facebook"/>
         <input type="button" class="btn twitter" value="Twitter"/>
         <input type="button" class="btn google" value="Google"/>
-        <input type="button" class="btn kakao" value="Kakao"/>
+        <input type="button" class="btn kakao" value="Kakao" onclick="location.href='kakaostart'"/>
     </div>
 </form>
 </body>
