@@ -39,13 +39,13 @@
             <div class="row">
                 <div class="col">${board.num}</div>
                 <div class="col">
-                    <a style="text-decoration:none" href="boardView&num=${board.num}">
+                    <a style="text-decoration:none" href="boardView?num=${board.num}">
                             ${board.title}
                     </a>&nbsp;
                     <c:if test="${board.replycnt>0}">
                         <span style="color:red; font-weight:bold">[${board.replycnt}]</span>
                     </c:if>
-                    <c:if test="${not empty board.imgfilename}">
+                    <c:if test="${not empty board.savefilename}">
                         <span style="color:blue; font-weight:bold;font-size:90%">[img]</span>
                     </c:if>
 

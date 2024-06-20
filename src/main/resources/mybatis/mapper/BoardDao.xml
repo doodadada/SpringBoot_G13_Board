@@ -15,9 +15,44 @@
     </select>
     <insert id="insertBoard"  parameterType="com.himedia.g13.dto.BoardDto">
         INSERT INTO board(userid, pass, email, title, content, image, savefilename)
-        values (#{userid}, #{pass}, #{email}, #{title}, #{content}, #{imgfilename}, #{imgfilename})
+        values (#{userid}, #{pass}, #{email}, #{title}, #{content}, #{image}, #{savefilename})
     </insert>
-<!--    <select id="getMember" resultType="com.himedia.g13.dto.MemberDto">-->
+    <update id="plusOneReadCount">
+        UPDATE board SET readcount = readcount+1 WHERE num = #{param1}
+    </update>
+    <select id="getBoard" resultType="com.himedia.g13.dto.BoardDto">
+        SELECT * FROM board WHERE num = #{param1}
+    </select>
+
+    <select id="selectReply" resultType="com.himedia.g13.dto.ReplyDto">
+        SELECT * FROM reply WHERE boardnum=#{param1} ORDER BY replynum DESC
+    </select>
+    <insert id="insertReply" parameterType="com.himedia.g13.dto.ReplyDto">
+        INSERT INTO reply (boardnum, userid, content)
+        VALUES (#{boardnum},#{userid},#{content})
+    </insert>
+    <delete id="deleteReply">
+        DELETE FROM reply WHERE replynum=#{param1} AND boardnum=#{param2}
+    </delete>
+    <update id="updateBoard" parameterType="com.himedia.g13.dto.BoardDto">
+        UPDATE board
+        SET
+            userid=#{userid},
+            pass=#{pass},
+            email=#{email},
+            title=#{title},
+            content=#{content},
+            image=#{image},
+            savefilename=#{savefilename}
+        WHERE num = #{num}
+    </update>
+    <delete id="deleteBoard">
+        DELETE
+        FROM board
+        WHERE num = #{param1}
+    </delete>
+
+    <!--    <select id="getMember" resultType="com.himedia.g13.dto.MemberDto">-->
 <!--        SELECT *-->
 <!--        FROM member-->
 <!--        WHERE userid = #{param1}-->

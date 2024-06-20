@@ -2,14 +2,18 @@ package com.himedia.g13.controller;
 
 import com.himedia.g13.dto.BoardDto;
 import com.himedia.g13.dto.MemberDto;
+import com.himedia.g13.dto.ReplyDto;
 import com.himedia.g13.service.BoardService;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -57,9 +61,19 @@ public class BoardController {
     }
 
     @PostMapping("insertBoard")
-    public String insertBoard(BoardDto board, HttpServletRequest request) {
-        bs.insertBoard(board);
-        return "redirect:/boardlist";
+    public String insertBoard(@ModelAttribute("dto") @Valid BoardDto boarddto, BindingResult result, HttpServletRequest request, Model model) {
+        String url="board/insertBoardForm";
+        if(result.getFieldError("pass")!=null){
+            model.addAttribute("message",result.getFieldError("pass").getDefaultMessage());
+        }else if(result.getFieldError("title")!=null){
+            model.addAttribute("message",result.getFieldError("title").getDefaultMessage());
+        }else if(result.getFieldError("content")!=null){
+            model.addAttribute("message",result.getFieldError("content").getDefaultMessage());
+        }else{
+            bs.insertBoard(boarddto);
+            url ="redirect:/boardlist";
+        }
+        return url;
     }
 
     @Autowired
@@ -95,4 +109,78 @@ public class BoardController {
 
         return "board/completupload";
     }
+
+    @GetMapping("/boardView")
+    public ModelAndView boardView(@RequestParam("num")int num, HttpServletRequest request) {
+        ModelAndView mav = new ModelAndView();
+
+        HashMap<String, Object> result = bs.boardView(num);
+        mav.addObject("board",result.get("board"));
+        mav.addObject("replyList", result.get("replyList"));
+        mav.setViewName("board/boardView");
+        return mav;
+    }
+
+    @GetMapping("/boardViewWithoutCnt")
+    public ModelAndView boardViewWithoutCnt(@RequestParam("num")int num, HttpServletRequest request) {
+        ModelAndView mav = new ModelAndView();
+
+        HashMap<String, Object> result = bs.boardViewWithoutCnt(num);
+        mav.addObject("board",result.get("board"));
+        mav.addObject("replyList", result.get("replyList"));
+        mav.setViewName("board/boardView");
+        return mav;
+    }
+
+    @PostMapping("/insertReply")
+    public String insertReply(ReplyDto replyDto, HttpServletRequest request){
+        bs.insertReply(replyDto);
+        return "redirect:/boardViewWithoutCnt?num="+replyDto.getBoardnum();
+    }
+
+    @GetMapping("/deleteReply")
+    public String deleteReply(@RequestParam("replynum")int replynum,@RequestParam("boardnum") int boardnum, HttpServletRequest request){
+        bs.deleteReply(replynum,boardnum);
+        return "redirect:/boardViewWithoutCnt?num="+boardnum;
+    }
+
+    @GetMapping("/updateBoardForm")
+    public ModelAndView updateBoardForm(@RequestParam("num")int num, HttpServletRequest request){
+        ModelAndView mav = new ModelAndView();
+        BoardDto bdto = bs.getBoard(num);
+        mav.addObject("board",bdto);
+        mav.setViewName("board/updateBoardForm");
+        return mav;
+    }
+
+    @PostMapping("/updateBoard")
+    public String updateBoard(@ModelAttribute("dto") @Valid BoardDto boarddto,
+                              BindingResult result,
+                              @RequestParam(value="oldimage", required = false) String oldimage,
+                              @RequestParam(value="oldsavefilename", required = false) String oldsavefilename,
+                              HttpServletRequest request,
+                              Model model){
+        String url = "board/boardUpdateForm";
+        BoardDto bdto = bs.getBoard(boarddto.getNum());
+        model.addAttribute("board",bdto);
+        if(result.getFieldError("title")!=null){
+            model.addAttribute("message","제목은 필수입력 사항입니다. ");
+        }else if(result.getFieldError("content")!=null){
+            model.addAttribute("message","게시물 내용은 비워둘 수 없습니다. ");
+        }else{
+            url = "redirect:/boardViewWithoutCnt?num="+boarddto.getNum();
+            if(boarddto.getSavefilename()==null||boarddto.getSavefilename().equals("")){
+                boarddto.setImage(oldimage);
+                boarddto.setSavefilename(oldsavefilename);
+            }
+            bs.updateBoard(boarddto);
+        }
+        return url;
+    }
+    @GetMapping("/deleteBoard")
+    public String deleteBoard(@RequestParam("num")int num, HttpServletRequest request){
+        bs.deleteBoard(num);
+        return "redirect:/boardlist";
+    }
+
 }
